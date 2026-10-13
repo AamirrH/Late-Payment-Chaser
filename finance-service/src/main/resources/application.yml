@@ -1,0 +1,23 @@
+server:
+  port: ${PORT:8080}
+  address: ${BIND_ADDRESS:127.0.0.1}
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 11MB
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+chaser:
+  mode: ${APP_MODE:demo}
+  data-dir: ${DATA_DIR:.data}
+  origin: ${APP_ORIGIN:http://localhost:5173}
+  bank-rate: ${BANK_RATE:0.06}
+  bank-rate-date: ${BANK_RATE_DATE:2026-10-13}
+  default-credit-days: ${DEFAULT_CREDIT_DAYS:0}
+  demo-date: ${DEMO_DATE:2026-10-13}
+  ai-url: ${AI_SERVICE_URL:http://127.0.0.1:8081}
+  ai-secret: ${AI_SERVICE_SECRET:}
+  project-id: ${FIREBASE_PROJECT_ID:}
+  bucket: ${GCS_BUCKET:}
