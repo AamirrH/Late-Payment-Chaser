@@ -24,7 +24,7 @@ Updated: **13 October 2026, 12:50 IST**. See `STATE.md` for verified implementat
 - [x] Compile React production bundle before the dependency override.
 - [ ] Complete browser walkthrough: profile -> overdue example -> confirm -> draft -> +30 -> +30 -> filing PDF; within-terms and ineligible examples; overview totals; mobile viewport.
 - [ ] Inspect rendered PDF pages/text for wrapping and pagination. Current PDF test verifies header only. Built-in Helvetica may not support non-Latin supplier/buyer names; add a Unicode font or explicitly constrain demo inputs.
-- [ ] Add notice snapshot bank-rate/date metadata to text/PDF notices, not only the current formula/filing pack. Avoid using mutable current configuration to describe historical drafts.
+- [x] Add notice snapshot bank-rate/date metadata to text/PDF notices, with an export-controller test for the persisted calculation values.
 - [x] Tighten AI extraction retry timeout: each attempt receives only the remaining time from the total 20-second endpoint budget, with mocked configuration tests.
 - [ ] Decide and test retry behavior for transient AI transport failure; current finance draft loop falls back immediately on an exception, while numeric mismatch gets two retries.
 - [ ] Test Gemini SDK call configuration with a mocked client, including timeout, structured schema and no tool declarations.

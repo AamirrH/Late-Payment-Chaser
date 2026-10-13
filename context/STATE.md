@@ -57,7 +57,7 @@ Updated: **13 October 2026, 12:50 IST**. This is the resume checkpoint for the a
 
 ## Verified results
 
-- **38 finance JUnit tests passed**, including all four golden amounts (690.41 / 1450.77 / 2197.13 / 2761.64), leap day/month-end, due-date boundaries, eligibility, verifier rejection, ownership, paid terminal and API golden path. The suite was re-run through the new Maven Wrapper using Java 21 and an isolated Maven repository.
+- **38 finance JUnit tests passed**, including all four golden amounts (690.41 / 1450.77 / 2197.13 / 2761.64), leap day/month-end, due-date boundaries, eligibility, verifier rejection, ownership, paid terminal and API golden path. The suite was re-run through the new Maven Wrapper using Java 21 and an isolated Maven repository after notice-export metadata was added.
 - **16 AI pytest tests passed** after timeout/configuration additions. Live Gemini extraction quality has not been tested.
 - **React production build passed** after the dependency override.
 - **Real HTTP smoke test passed** against running finance + AI services: confirmation, 690.41 -> 1450.77 -> 2197.13, verified fallback drafts, filing PDF, text export, paid totals and deletion.
@@ -74,9 +74,9 @@ Updated: **13 October 2026, 12:50 IST**. This is the resume checkpoint for the a
 
 ## Git checkpoint
 
-At this checkpoint, local `main` and `origin/main` both equal **`906c0b9a7112e6144a7f03736a6128bf106ad004`** (`docs: add portable local demo setup`). The worktree is clean before this checkpoint-file update. The remote is `https://github.com/AamirrH/Late-Payment-Chaser.git`.
+The most recent verified application commit is **`61ca1b4`** (`fix(finance): snapshot rate metadata in notice exports`) and it is pushed to `origin/main`. The remote is `https://github.com/AamirrH/Late-Payment-Chaser.git`; check `git status --short --branch` before taking the next action.
 
-Meaningful commits now touching the service directories: **18 finance**, **13 AI**, and **20 web**. New verified commits in this resumed session are `01425b1` (bounded AI extraction timeout), `fecbfa6` (Maven Wrapper and engine cleanup), and `906c0b9` (root setup and launcher). Push each further verified slice, then update this section with its exact SHA and clean-state check. Never include `.tools/`, `.data/`, `node_modules/`, `.env.local`, tokens or credentials.
+Meaningful commits now touching the service directories: **19 finance**, **13 AI**, and **20 web**. New verified commits in this resumed session are `01425b1` (bounded AI extraction timeout), `fecbfa6` (Maven Wrapper and engine cleanup), `906c0b9` (root setup and launcher), `87d8938` (checkpoint refresh), and `61ca1b4` (notice-export rate snapshot). Push each further verified slice, then update this section with its exact SHA and clean-state check. Never include `.tools/`, `.data/`, `node_modules/`, `.env.local`, tokens or credentials.
 
 ## Exact resume order
 
