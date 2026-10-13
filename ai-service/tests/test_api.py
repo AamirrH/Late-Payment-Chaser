@@ -1,10 +1,11 @@
 import base64
 import json
 from pathlib import Path
+from types import SimpleNamespace
 import pytest
 from fastapi.testclient import TestClient
 from jsonschema import Draft202012Validator, FormatChecker
-from app.main import app, _calls
+from app.main import app, _calls, remaining_timeout_ms
 from app.models import DraftRequest, DraftResponse, ExtractResponse
 from app import gemini
 
@@ -22,7 +23,7 @@ def reset(monkeypatch):
 
 def test_extraction_missing_fields_and_contract(monkeypatch):
     result = ExtractResponse(invoiceNo="DEMO-042", amount="50000.00", buyer="Synthetic buyer", invoiceDate="2026-08-01", acceptedDate=None, agreedCreditDays=None, fieldNotes=["Acceptance date missing"])
-    monkeypatch.setattr(gemini, "generate", lambda *args: result)
+    monkeypatch.setattr(gemini, "generate", lambda *args, **kwargs: result)
     response = client.post("/ai/extract", json={"contentBase64": base64.b64encode(b"%PDF-synthetic").decode(), "mimeType": "application/pdf"})
     assert response.status_code == 200
     assert response.json()["acceptedDate"] is None
@@ -50,6 +51,45 @@ def test_secret_and_bad_mime(monkeypatch):
 def test_unconfigured_service_does_not_invent_data():
     response = client.post("/ai/extract", json={"contentBase64": base64.b64encode(b"%PDF-synthetic").decode(), "mimeType": "application/pdf"})
     assert response.status_code == 503
+
+
+def test_remaining_timeout_never_exceeds_endpoint_budget(monkeypatch):
+    monkeypatch.setattr("app.main.time.monotonic", lambda: 100.250)
+    assert remaining_timeout_ms(120.000) == 19_750
+    assert remaining_timeout_ms(100.250) == 0
+    assert remaining_timeout_ms(99.000) == 0
+
+
+def test_gemini_call_has_a_bounded_timeout_and_structured_schema(monkeypatch):
+    captured = {}
+
+    class FakeModels:
+        def generate_content(self, **kwargs):
+            captured["request"] = kwargs
+            return SimpleNamespace(text=ExtractResponse(
+                invoiceNo=None, amount=None, buyer=None, invoiceDate=None,
+                acceptedDate=None, agreedCreditDays=None, fieldNotes=[]
+            ).model_dump_json())
+
+    class FakeClient:
+        def __init__(self, **kwargs):
+            captured["client"] = kwargs
+            self.models = FakeModels()
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_):
+            return False
+
+    monkeypatch.setenv("GEMINI_API_KEY", "test-key")
+    monkeypatch.setenv("GEMINI_MODEL", "test-model")
+    monkeypatch.setattr(gemini.genai, "Client", FakeClient)
+    result = gemini.generate(ExtractResponse, "trusted instructions", ["untrusted data"], timeout_ms=1_234)
+    assert result.invoiceNo is None
+    assert captured["client"]["http_options"].timeout == 1_234
+    assert captured["request"]["config"].response_schema is ExtractResponse
+    assert not hasattr(captured["request"]["config"], "tools") or captured["request"]["config"].tools is None
 
 
 @pytest.mark.parametrize("amount", [50000.0, "NaN", "-1.00", "5e4", "50000.001"])

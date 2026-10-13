@@ -15,6 +15,12 @@ load_dotenv()
 app = FastAPI(title="Late Payment Chaser — stateless AI", docs_url=None, redoc_url=None)
 _calls: deque[float] = deque()
 _lock = threading.Lock()
+EXTRACTION_BUDGET_SECONDS = 20
+
+
+def remaining_timeout_ms(deadline: float) -> int:
+    """Return the SDK timeout left in the endpoint's total extraction budget."""
+    return max(0, int((deadline - time.monotonic()) * 1000))
 
 
 def guard(request: Request, x_service_secret: str | None = Header(default=None)):
@@ -53,10 +59,18 @@ def extract(data: ExtractRequest):
         raise HTTPException(400, "File type does not match contents")
     # The finance request deadline is 25 seconds; avoid multiplying SDK timeouts.
     # Invalid structured responses retry here within that total budget.
-    deadline = time.monotonic() + 20
+    deadline = time.monotonic() + EXTRACTION_BUDGET_SECONDS
     for _ in range(3):
+        timeout_ms = remaining_timeout_ms(deadline)
+        if timeout_ms == 0:
+            break
         try:
-            return gemini.generate(ExtractResponse, prompts.EXTRACT, [types.Part.from_bytes(data=raw, mime_type=data.mimeType)])
+            return gemini.generate(
+                ExtractResponse,
+                prompts.EXTRACT,
+                [types.Part.from_bytes(data=raw, mime_type=data.mimeType)],
+                timeout_ms=timeout_ms,
+            )
         except Exception:
             if time.monotonic() >= deadline or not os.getenv("GEMINI_API_KEY"):
                 break
