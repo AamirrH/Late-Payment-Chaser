@@ -30,7 +30,7 @@ Updated: **13 October 2026, 12:50 IST**. This is the resume checkpoint for the a
 
 ### AI service — `ai-service/`
 
-- Stateless FastAPI/Pydantic; strict money-string schemas; no database/money arithmetic/sending tools.
+- Stateless FastAPI/Pydantic; strict money-string schemas; no database/money arithmetic/sending tools. The reviewed draft prompt interpolates only validated engine values, while supplier/buyer/document content remains untrusted request data.
 - Google GenAI structured extraction and drafting; central reviewed prompts; missing fields stay null.
 - Optional shared secret, loopback-only unauthenticated demo access, per-instance 30 requests/minute guard.
 - No Gemini key/model configured locally. Returns explicit unavailable responses; finance uses manual confirmation/template fallback.
@@ -74,14 +74,14 @@ Updated: **13 October 2026, 12:50 IST**. This is the resume checkpoint for the a
 
 ## Git checkpoint
 
-The most recent verified application commit is **`61ca1b4`** (`fix(finance): snapshot rate metadata in notice exports`) and it is pushed to `origin/main`. The remote is `https://github.com/AamirrH/Late-Payment-Chaser.git`; check `git status --short --branch` before taking the next action.
+The most recent verified application commit is **`b8596ed`** (`fix(ai): inject verified values into draft prompt`) and it is pushed to `origin/main`. The remote is `https://github.com/AamirrH/Late-Payment-Chaser.git`; check `git status --short --branch` before taking the next action.
 
-Meaningful commits now touching the service directories: **19 finance**, **13 AI**, and **20 web**. New verified commits in this resumed session are `01425b1` (bounded AI extraction timeout), `fecbfa6` (Maven Wrapper and engine cleanup), `906c0b9` (root setup and launcher), `87d8938` (checkpoint refresh), and `61ca1b4` (notice-export rate snapshot). Push each further verified slice, then update this section with its exact SHA and clean-state check. Never include `.tools/`, `.data/`, `node_modules/`, `.env.local`, tokens or credentials.
+Meaningful commits now touching the service directories: **19 finance**, **14 AI**, and **20 web**. New verified commits in this resumed session are `01425b1` (bounded AI extraction timeout), `fecbfa6` (Maven Wrapper and engine cleanup), `906c0b9` (root setup and launcher), `87d8938` (checkpoint refresh), `61ca1b4` (notice-export rate snapshot), and `b8596ed` (draft prompt value injection). Push each further verified slice, then update this section with its exact SHA and clean-state check. Never include `.tools/`, `.data/`, `node_modules/`, `.env.local`, tokens or credentials.
 
 ## Exact resume order
 
 1. Commit and push this checkpoint update; preserve any user changes and record its exact SHA.
 2. Complete the browser desktop/mobile golden-path checks and inspect rendered PDF pages.
 3. Address the concrete unfinished P0 hardening items in `BACKLOG.md`, prioritising AI transport retries and historic notice metadata.
-4. Keep commits meaningful and pushed frequently; AI is two focused commits short of the requested 15–25 range.
+4. Keep commits meaningful and pushed frequently; AI is one focused commit short of the requested 15–25 range.
 5. Give the user a working local preview link, test totals, repo link and cloud setup list. Be explicit that cloud credentials/resources and real deployment remain outstanding.

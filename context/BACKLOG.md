@@ -14,6 +14,8 @@ Updated: **13 October 2026, 12:50 IST**. See `STATE.md` for verified implementat
 
 ## P0 verification and fixes
 
+- [x] Interpolate only validated engine values into the reviewed Gemini draft prompt; test that the exact financial block has no unresolved placeholders.
+
 - [x] Implement exact finance engine and four golden amounts.
 - [x] Test due date, month end, leap day, zero balance, missing acceptance and stage boundaries.
 - [x] Implement isolated demo auth, Firebase auth path and owner-scoped case operations.
