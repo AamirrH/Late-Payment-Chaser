@@ -1,0 +1,11 @@
+#!/bin/sh
+# Licensed to the Apache Software Foundation (ASF) under the Apache License, Version 2.0.
+set -eu
+basedir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+wrapper_jar="$basedir/.mvn/wrapper/maven-wrapper.jar"
+if [ ! -f "$wrapper_jar" ]; then
+  echo "Maven Wrapper JAR is missing: $wrapper_jar" >&2
+  exit 1
+fi
+java_cmd="${JAVA_HOME:+$JAVA_HOME/bin/}java"
+exec "$java_cmd" -classpath "$wrapper_jar" -Dmaven.multiModuleProjectDirectory="$basedir" org.apache.maven.wrapper.MavenWrapperMain "$@"

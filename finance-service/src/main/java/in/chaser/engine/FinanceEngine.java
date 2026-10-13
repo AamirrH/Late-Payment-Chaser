@@ -29,8 +29,7 @@ public final class FinanceEngine {
         int months = 0;
         while (due.plusMonths(months + 1L).compareTo(today) <= 0) months++;
         long remaining = overdue == 0 ? 0 : ChronoUnit.DAYS.between(due.plusMonths(months), today);
-        var amount = principal.multiply(BigDecimal.ONE.add(annual.divide(new BigDecimal("12"), MC)), MC);
-        amount = principal.multiply(BigDecimal.ONE.add(annual.divide(new BigDecimal("12"), MC)).pow(months, MC), MC);
+        var amount = principal.multiply(BigDecimal.ONE.add(annual.divide(new BigDecimal("12"), MC)).pow(months, MC), MC);
         amount = amount.add(amount.multiply(annual, MC).multiply(BigDecimal.valueOf(remaining), MC).divide(new BigDecimal("365"), MC), MC);
         var interest = amount.subtract(principal).setScale(2, RoundingMode.HALF_UP);
         return new Calculation(money(principal), money(interest), money(principal.add(interest)), overdue,
