@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "money": {"type":"string","pattern":"^[0-9]{1,12}\\.[0-9]{2}$"},
+    "numbers": {
+      "type":"object","additionalProperties":false,
+      "required":["principal","interest","total","daysOverdue","dueDate"],
+      "properties": {
+        "principal":{"$ref":"#/$defs/money"},"interest":{"$ref":"#/$defs/money"},"total":{"$ref":"#/$defs/money"},
+        "daysOverdue":{"type":"integer","minimum":0},"dueDate":{"type":"string","format":"date"}
+      }
+    },
+    "extractResponse": {
+      "type":"object","additionalProperties":false,
+      "required":["invoiceNo","amount","buyer","invoiceDate","acceptedDate","agreedCreditDays","fieldNotes"],
+      "properties": {
+        "invoiceNo":{"type":["string","null"],"maxLength":80},"amount":{"anyOf":[{"$ref":"#/$defs/money"},{"type":"null"}]},
+        "buyer":{"type":["string","null"],"maxLength":160},"invoiceDate":{"type":["string","null"],"format":"date"},
+        "acceptedDate":{"type":["string","null"],"format":"date"},"agreedCreditDays":{"type":["integer","null"],"minimum":0,"maximum":365},
+        "fieldNotes":{"type":"array","items":{"type":"string","maxLength":500},"maxItems":20}
+      }
+    },
+    "draftRequest": {
+      "type":"object","additionalProperties":false,"required":["stage","tone","supplier","buyer","numbers"],
+      "properties": {
+        "stage":{"enum":["reminded","formal","notice","filing_ready"]},"tone":{"enum":["friendly","firm","formal"]},
+        "supplier":{"type":"string","minLength":1,"maxLength":160},"buyer":{"type":"string","minLength":1,"maxLength":160},"numbers":{"$ref":"#/$defs/numbers"}
+      }
+    },
+    "draftResponse": {
+      "type":"object","additionalProperties":false,"required":["subject","body","citedNumbers"],
+      "properties":{"subject":{"type":"string","minLength":1,"maxLength":200},"body":{"type":"string","minLength":1,"maxLength":12000},"citedNumbers":{"$ref":"#/$defs/numbers"}}
+    }
+  }
+}
