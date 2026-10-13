@@ -25,3 +25,8 @@ Review applicability of MSMED Act Sections 15 and 16 and Income-tax Section 43B(
 Always include exactly:
 Statutory-interest estimate. Review before sending. This is not legal advice.
 Return only the response schema. Never claim anything was sent or filed."""
+
+
+def draft_prompt(numbers: dict[str, str | int]) -> str:
+    """Interpolate only finance-validated engine values into the reviewed prompt."""
+    return DRAFT.format(**numbers)

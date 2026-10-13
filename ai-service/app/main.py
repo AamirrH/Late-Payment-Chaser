@@ -80,6 +80,10 @@ def extract(data: ExtractRequest):
 @app.post("/ai/draft", response_model=DraftResponse, dependencies=[Depends(guard)])
 def draft(data: DraftRequest):
     try:
-        return gemini.generate(DraftResponse, prompts.DRAFT, [data.model_dump_json()])
+        return gemini.generate(
+            DraftResponse,
+            prompts.draft_prompt(data.numbers.model_dump(mode="json")),
+            [data.model_dump_json()],
+        )
     except Exception:
         raise HTTPException(503, "Draft generation unavailable; finance service will use its verified template.")
