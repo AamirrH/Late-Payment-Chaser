@@ -1,15 +1,15 @@
 # Implementation backlog
 
-Updated: **13 October 2026, 12:07 IST**. See `STATE.md` for verified implementation, local processes and user instructions. Check items only after observing success. Keep scope at P0 unless the user authorizes more.
+Updated: **13 October 2026, 12:50 IST**. See `STATE.md` for verified implementation, local processes and user instructions. Check items only after observing success. Keep scope at P0 unless the user authorizes more.
 
 ## Immediate checkpoint / portability
 
-- [ ] Commit and push ALL current source/config/docs/tests, including STATE/BACKLOG, as explicitly requested. Generated dependencies, builds, data and secrets remain ignored.
-- [ ] Verify remote `main` equals local HEAD, record commit counts and clean worktree state in STATE.
-- [ ] Finish the running post-gRPC-override frontend build/audit (install already reports zero vulnerabilities).
-- [ ] Add working Maven wrapper (`mvnw`, `mvnw.cmd`, `.mvn/wrapper/...`) or correct README commands. Wrapper is currently referenced but does not exist.
-- [ ] Write root README with tested five-step setup, exact ports, cloud configuration map and honest verification limits.
-- [ ] Add a portable local startup workflow. Do not hardcode this machine's `.tools`/JDK/Maven paths in tracked setup scripts.
+- [x] Commit and push current source/config/docs/tests; generated dependencies, builds, data and secrets remain ignored. Continue this practice for every completed slice.
+- [x] Verify remote `main` equals local HEAD and record the exact SHA and commit counts in STATE (before the next checkpoint-file commit).
+- [x] Finish the post-gRPC-override frontend production build.
+- [x] Add and exercise a working Maven Wrapper (`mvnw`, `mvnw.cmd`, `.mvn/wrapper/...`).
+- [x] Write a root README with five-step setup, exact ports, cloud configuration map and honest verification limits.
+- [x] Add a portable local startup workflow without tracked machine-specific paths. It uses ignored local caches only.
 - [ ] Check GitHub CI after workflow is pushed; repair any failures.
 
 ## P0 verification and fixes
@@ -25,7 +25,7 @@ Updated: **13 October 2026, 12:07 IST**. See `STATE.md` for verified implementat
 - [ ] Complete browser walkthrough: profile -> overdue example -> confirm -> draft -> +30 -> +30 -> filing PDF; within-terms and ineligible examples; overview totals; mobile viewport.
 - [ ] Inspect rendered PDF pages/text for wrapping and pagination. Current PDF test verifies header only. Built-in Helvetica may not support non-Latin supplier/buyer names; add a Unicode font or explicitly constrain demo inputs.
 - [ ] Add notice snapshot bank-rate/date metadata to text/PDF notices, not only the current formula/filing pack. Avoid using mutable current configuration to describe historical drafts.
-- [ ] Tighten AI extraction retry timeout: current loop checks deadline between attempts but each attempt still has a full 20-second timeout, so combined elapsed time can exceed the intended budget. Pass remaining time into the SDK call and test it.
+- [x] Tighten AI extraction retry timeout: each attempt receives only the remaining time from the total 20-second endpoint budget, with mocked configuration tests.
 - [ ] Decide and test retry behavior for transient AI transport failure; current finance draft loop falls back immediately on an exception, while numeric mismatch gets two retries.
 - [ ] Test Gemini SDK call configuration with a mocked client, including timeout, structured schema and no tool declarations.
 - [ ] Confirm frontend sign-in retry and Firebase initialization are safe after a failed/repeated attempt; avoid duplicate app initialization.
@@ -53,8 +53,8 @@ Updated: **13 October 2026, 12:07 IST**. See `STATE.md` for verified implementat
 ## Commit/push request
 
 - [x] Finance: 15 focused commits pushed before the current checkpoint (additional packaging/hardening commits allowed, target 15–25).
-- [ ] AI: 7 pushed before checkpoint; packaging/new tests pending. Reach at least 15 meaningful commits through remaining tests, timeout fix and operational docs.
-- [ ] Web: implementation untracked before checkpoint. Commit small component/feature groups, aiming 15–25 commits, push frequently.
+- [ ] AI: 13 meaningful commits now pushed. Reach at least 15 through remaining retry/operational hardening; do not create filler commits.
+- [x] Web: 20 meaningful commits are pushed, within the requested 15–25 range.
 - [ ] Push new fixes as they pass relevant checks; do not create empty commits or misleading commit messages to inflate counts.
 
 ## Explicitly deferred

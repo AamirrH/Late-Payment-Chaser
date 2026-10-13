@@ -1,6 +1,6 @@
 # Current implementation state
 
-Updated: **13 October 2026, 12:07 IST**. This is the resume checkpoint for the active build. Read this file, `BACKLOG.md`, root `AGENTS.md`, all four original context documents, and the five architecture PNGs before continuing. **Do not restart or replace the existing implementation.**
+Updated: **13 October 2026, 12:50 IST**. This is the resume checkpoint for the active build. Read this file, `BACKLOG.md`, root `AGENTS.md`, all four original context documents, and the five architecture PNGs before continuing. **Do not restart or replace the existing implementation.**
 
 ## User instructions that remain active
 
@@ -9,7 +9,7 @@ Updated: **13 October 2026, 12:07 IST**. This is the resume checkpoint for the a
 - GitHub: **https://github.com/AamirrH/Late-Payment-Chaser**, branch **main**.
 - Make small meaningful commits and push frequently. Target **15–25 commits per service**, including the frontend; no empty/filler commits.
 - Keep this file and `BACKLOG.md` current so another machine/session can resume.
-- Latest explicit request: **push ALL current changes after writing these checkpoint files**, so another machine can pull the latest state. Ignore generated dependencies, build output, runtime data and secrets.
+- Latest explicit request: continue the P0 hardening work, make small meaningful commits, push each verified slice, and keep these checkpoint files current so another session can resume.
 
 ## Implemented
 
@@ -26,7 +26,7 @@ Updated: **13 October 2026, 12:07 IST**. This is the resume checkpoint for the a
 - Timeline/event trace; paid terminal; within-terms and zero-principal invoices do not draft.
 - Atomic local JSON/file persistence; Firestore/GCS adapter and Cloud Run IAM client implemented but **not tested against real cloud resources**.
 - P0 cloud persistence is a bounded case aggregate rather than the full repository/subcollection layout in the class diagram. One finance instance/concurrency one required until transactions are added.
-- Dockerfile, `.dockerignore`, environment example and service README written. Maven wrapper still missing despite README reference; see backlog.
+- Dockerfile, `.dockerignore`, environment example, README and a committed Maven Wrapper are present. The wrapper was exercised with Java 21 and Maven 3.9.11 using an isolated cache.
 
 ### AI service — `ai-service/`
 
@@ -34,7 +34,7 @@ Updated: **13 October 2026, 12:07 IST**. This is the resume checkpoint for the a
 - Google GenAI structured extraction and drafting; central reviewed prompts; missing fields stay null.
 - Optional shared secret, loopback-only unauthenticated demo access, per-instance 30 requests/minute guard.
 - No Gemini key/model configured locally. Returns explicit unavailable responses; finance uses manual confirmation/template fallback.
-- Contract tests and added strict schema/rate-limit tests pass with mocked Gemini.
+- Contract tests, strict schema/rate-limit tests, and Gemini-call configuration tests pass with mocked Gemini. Extraction retries now receive only the remaining time from the total 20-second endpoint budget, preventing multiple full SDK timeouts.
 - Dockerfile, `.dockerignore`, environment example and README written.
 
 ### React app — `web/`
@@ -43,7 +43,7 @@ Updated: **13 October 2026, 12:07 IST**. This is the resume checkpoint for the a
 - Login, business profile, overview/totals/search/filter, upload with preview, editable confirmation, case detail, formula disclosure, timeline, tone picker, verified notice, text/PDF/copy actions, simulation, filing pack, paid/delete, agent trace.
 - Real finance API calls; UI never computes financial results. Synthetic data, template fallback and simulated dates labelled.
 - Firebase anonymous-auth path implemented via environment configuration; not tested with a live Firebase project.
-- Production build passed. Dependency audit initially found a transitive gRPC issue; patched via `@grpc/grpc-js` override. Install now reports **zero vulnerabilities**. Rebuild/audit after this override is in progress at checkpoint time.
+- Production build passed after the `@grpc/grpc-js` override. A portable local launcher installs dependencies using an ignored project-local npm cache to avoid a locked user-level cache.
 - `.env.local` is intentionally ignored and contains only `FINANCE_PROXY=http://127.0.0.1:8082` for this machine, because an unrelated process already owns port 8080. Other machines should use default 8080 or set their own override.
 
 ### Shared / operational files
@@ -57,35 +57,31 @@ Updated: **13 October 2026, 12:07 IST**. This is the resume checkpoint for the a
 
 ## Verified results
 
-- **38 finance JUnit tests passed**, including all four golden amounts (690.41 / 1450.77 / 2197.13 / 2761.64), leap day/month-end, due-date boundaries, eligibility, verifier rejection, ownership, paid terminal and API golden path.
-- **14 AI pytest tests passed** after strict-schema/rate-limit additions. Live Gemini extraction quality has not been tested.
-- **React production build passed** before the dependency override; post-override rebuild is running.
+- **38 finance JUnit tests passed**, including all four golden amounts (690.41 / 1450.77 / 2197.13 / 2761.64), leap day/month-end, due-date boundaries, eligibility, verifier rejection, ownership, paid terminal and API golden path. The suite was re-run through the new Maven Wrapper using Java 21 and an isolated Maven repository.
+- **16 AI pytest tests passed** after timeout/configuration additions. Live Gemini extraction quality has not been tested.
+- **React production build passed** after the dependency override.
 - **Real HTTP smoke test passed** against running finance + AI services: confirmation, 690.41 -> 1450.77 -> 2197.13, verified fallback drafts, filing PDF, text export, paid totals and deletion.
 - Browser preview opens in a background Codex browser. Sign-in was clicked; finish verifying the UI path and mobile viewport. Visible preview attachment initially timed out; background tab worked. No completed browser walkthrough claimed yet.
 - No Google Cloud deployment, live Gemini call, mobile-data deployment check, legal approval, RBI lookup or real registry check performed.
 
 ## Local running services / tools (machine-specific)
 
-- Finance: `http://127.0.0.1:8082`, JVM PID **10032**, executable JAR `finance-service/target/finance-service-0.1.0.jar`.
-- AI: `http://127.0.0.1:8081`, Python PID **7440**, no Gemini credentials.
-- Web: `http://127.0.0.1:5173`, Vite dev server. `/api` proxies to 8082 via ignored `.env.local`.
-- Java: `C:/Program Files/Java/jdk-23` (set JAVA_HOME explicitly; system java shim hung).
-- Maven used: `C:/Users/VCTUS/.m2/wrapper/dists/apache-maven-3.9.15/0226a00282e400185496f3b60ec5a3f029cbdc6893912937d4876d57695224e1/bin/mvn.cmd`.
-- Maven cache used: `D:/Late-Payment-Chaser/.tools/m2`; pass the whole `-Dmaven.repo.local=...` argument in quotes under PowerShell.
-- Python env: `D:/Late-Payment-Chaser/.tools/python/Scripts/python.exe` (Python 3.12); created using bundled Codex Python after system venv/ensurepip failed in sandbox.
-- Shell network/build/subprocess actions needed `require_escalated`; no approval rejection occurred. GitHub authentication works.
-- Do not stop the unrelated process on port 8080. Current services/dependencies are not portable state; recreate them on the next machine.
+- Do **not** rely on the former session's PIDs or port override; this resumed pass did not start a long-lived local stack.
+- Use `powershell -ExecutionPolicy Bypass -File .\scripts\start-local.ps1` from the repository root. It starts finance on `8080`, AI on `8081`, and Vite on `5173`, printing the new PIDs.
+- Java 21 was available at `C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot`; the Maven Wrapper downloaded Maven 3.9.11 successfully. This is observational, not a tracked setup requirement.
+- `ai-service\.venv`, service `.tools`, `node_modules`, `dist`, local data and `.env.local` are ignored. The launcher uses a project-local ignored npm cache to avoid user-cache locks.
+- GitHub authentication succeeded for pushes during this pass. Shell network/build/subprocess actions used approved elevation.
 
 ## Git checkpoint
 
-Before this checkpoint operation, local and origin/main were both **abeef6e**. **26 commits** had been pushed: 4 setup/context/contract commits, **15 finance commits**, **7 AI commits**. Frontend and the newest operational/test files were still untracked.
+At this checkpoint, local `main` and `origin/main` both equal **`906c0b9a7112e6144a7f03736a6128bf106ad004`** (`docs: add portable local demo setup`). The worktree is clean before this checkpoint-file update. The remote is `https://github.com/AamirrH/Late-Payment-Chaser.git`.
 
-The active operation now is to commit and push **all** remaining source in small logical commits, including this file and BACKLOG. After pushing, update this section with the new commit counts and verify `git status --short` and HEAD vs origin/main. Never include `.tools/`, `.data/`, `node_modules/`, `.env.local`, tokens or credentials.
+Meaningful commits now touching the service directories: **18 finance**, **13 AI**, and **20 web**. New verified commits in this resumed session are `01425b1` (bounded AI extraction timeout), `fecbfa6` (Maven Wrapper and engine cleanup), and `906c0b9` (root setup and launcher). Push each further verified slice, then update this section with its exact SHA and clean-state check. Never include `.tools/`, `.data/`, `node_modules/`, `.env.local`, tokens or credentials.
 
 ## Exact resume order
 
-1. Confirm all current changes are pushed; preserve any user changes and update the Git checkpoint.
-2. Finish post-override web build/audit and browser desktop/mobile golden-path checks.
-3. Address the concrete unfinished items in `BACKLOG.md`, prioritising portable setup and AI timeout/retry hardening.
-4. Complete the requested meaningful service commit counts, pushing frequently.
-5. Give user a working local preview link, test totals, repo link and cloud setup list. Be explicit that cloud credentials/resources and real deployment remain outstanding.
+1. Commit and push this checkpoint update; preserve any user changes and record its exact SHA.
+2. Complete the browser desktop/mobile golden-path checks and inspect rendered PDF pages.
+3. Address the concrete unfinished P0 hardening items in `BACKLOG.md`, prioritising AI transport retries and historic notice metadata.
+4. Keep commits meaningful and pushed frequently; AI is two focused commits short of the requested 15–25 range.
+5. Give the user a working local preview link, test totals, repo link and cloud setup list. Be explicit that cloud credentials/resources and real deployment remain outstanding.
