@@ -12,7 +12,8 @@ public class PdfService {
     public String noticeText(CaseRecord c,Notice n) {
         return "LATE PAYMENT CHASER\n"+(c.synthetic?"SYNTHETIC DEMO DATA\n":"")+(n.simulated()?"SIMULATED DATE\n":"")
             +"Supplier: "+c.invoice.supplier().businessName()+"\nBuyer: "+c.invoice.buyer()+"\nInvoice: "+c.invoice.invoiceNo()
-            +"\nAs of: "+n.asOf()+"\nDraft source: "+n.source()+"\n\n"+n.subject()+"\n\n"+n.body()+"\n\nDraft only. Nothing has been sent.";
+            +"\nAs of: "+n.asOf()+"\nBank rate used: "+c.lastCalc.bankRate()+" (dated "+c.lastCalc.bankRateDate()+")"
+            +"\nDraft source: "+n.source()+"\n\n"+n.subject()+"\n\n"+n.body()+"\n\nDraft only. Nothing has been sent.";
     }
     public String filingText(CaseRecord c) {
         StringBuilder text=new StringBuilder("FILING PREPARATION PACK\n");

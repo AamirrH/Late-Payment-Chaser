@@ -30,8 +30,10 @@ class GoldenPathTest {
         String token=login(),id=fixture(token,"overdue");
         mvc.perform(patch("/cases/"+id+"/confirm").header("Authorization",token).contentType("application/json").content(json.writeValueAsString(invoice(false,true))))
             .andExpect(status().isOk()).andExpect(jsonPath("$.lastCalc.interest").value("690.41")).andExpect(jsonPath("$.stage").value("formal"));
-        mvc.perform(post("/cases/"+id+"/draft").header("Authorization",token).contentType("application/json").content("{\"tone\":\"formal\"}"))
-            .andExpect(status().isOk()).andExpect(jsonPath("$.notices[0].verified").value(true));
+        String noticeId=json.readTree(mvc.perform(post("/cases/"+id+"/draft").header("Authorization",token).contentType("application/json").content("{\"tone\":\"formal\"}"))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.notices[0].verified").value(true)).andReturn().getResponse().getContentAsString()).get("notices").get(0).get("id").asText();
+        mvc.perform(get("/cases/"+id+"/notices/"+noticeId+".txt").header("Authorization",token))
+            .andExpect(status().isOk()).andExpect(content().string(org.hamcrest.Matchers.containsString("Bank rate used: 0.06 (dated 2026-10-13)")));
         mvc.perform(post("/cases/"+id+"/simulate").header("Authorization",token).contentType("application/json").content("{\"days\":30}"))
             .andExpect(status().isOk()).andExpect(jsonPath("$.lastCalc.interest").value("1450.77")).andExpect(jsonPath("$.stage").value("notice")).andExpect(jsonPath("$.simulated").value(true));
         mvc.perform(post("/cases/"+id+"/simulate").header("Authorization",token).contentType("application/json").content("{\"days\":30}"))
